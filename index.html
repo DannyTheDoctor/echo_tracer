@@ -46,11 +46,13 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background-color: #9e9e9e;
+            transition: background-color 0.3s;
         }
 
-        .device-header.cvc-echo { background-color: #4285f4; }
-        .device-header.new-ultrasound { background-color: #34a853; }
-        .device-header.old-ultrasound { background-color: #ea4335; }
+        .device-header.status-available { background-color: #34a853; }
+        .device-header.status-borrowed { background-color: #d93025; }
+        .device-header.status-unknown { background-color: #9e9e9e; }
 
         .device-header h2 {
             margin: 0;
@@ -119,24 +121,42 @@
             border-radius: 4px;
             font-size: 14px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
         }
 
         .btn-borrow {
+            background-color: #e0e0e0;
+            color: #888;
+        }
+
+        .btn-borrow:hover {
+            background-color: #d0d0d0;
+        }
+
+        .btn-borrow.active {
             background-color: #4285f4;
             color: white;
         }
 
-        .btn-borrow:hover {
+        .btn-borrow.active:hover {
             background-color: #3367d6;
         }
 
         .btn-return {
+            background-color: #e0e0e0;
+            color: #888;
+        }
+
+        .btn-return:hover {
+            background-color: #d0d0d0;
+        }
+
+        .btn-return.active {
             background-color: #34a853;
             color: white;
         }
 
-        .btn-return:hover {
+        .btn-return.active:hover {
             background-color: #2d9249;
         }
 
@@ -335,7 +355,7 @@
         <div class="devices-grid">
             <!-- CVC echo -->
             <div class="device-card" id="card-cvc-echo">
-                <div class="device-header cvc-echo">
+                <div class="device-header status-unknown" id="header-cvc-echo">
                     <h2>CVC echo</h2>
                     <span class="status-badge unknown" id="status-cvc-echo">載入中...</span>
                 </div>
@@ -354,14 +374,14 @@
                     </div>
                 </div>
                 <div class="device-actions">
-                    <button class="btn btn-borrow" onclick="openBorrowModal('CVC echo')">借出</button>
-                    <button class="btn btn-return" onclick="openReturnModal('CVC echo')">歸還</button>
+                    <button class="btn btn-borrow" id="borrow-btn-cvc-echo" onclick="openBorrowModal('CVC echo')">借出</button>
+                    <button class="btn btn-return" id="return-btn-cvc-echo" onclick="openReturnModal('CVC echo')">歸還</button>
                 </div>
             </div>
 
             <!-- 新三頭超音波 -->
             <div class="device-card" id="card-new-ultrasound">
-                <div class="device-header new-ultrasound">
+                <div class="device-header status-unknown" id="header-new-ultrasound">
                     <h2>新三頭超音波</h2>
                     <span class="status-badge unknown" id="status-new-ultrasound">載入中...</span>
                 </div>
@@ -380,14 +400,14 @@
                     </div>
                 </div>
                 <div class="device-actions">
-                    <button class="btn btn-borrow" onclick="openBorrowModal('新三頭超音波')">借出</button>
-                    <button class="btn btn-return" onclick="openReturnModal('新三頭超音波')">歸還</button>
+                    <button class="btn btn-borrow" id="borrow-btn-new-ultrasound" onclick="openBorrowModal('新三頭超音波')">借出</button>
+                    <button class="btn btn-return" id="return-btn-new-ultrasound" onclick="openReturnModal('新三頭超音波')">歸還</button>
                 </div>
             </div>
 
             <!-- 舊二頭超音波 -->
             <div class="device-card" id="card-old-ultrasound">
-                <div class="device-header old-ultrasound">
+                <div class="device-header status-unknown" id="header-old-ultrasound">
                     <h2>舊二頭超音波</h2>
                     <span class="status-badge unknown" id="status-old-ultrasound">載入中...</span>
                 </div>
@@ -406,8 +426,8 @@
                     </div>
                 </div>
                 <div class="device-actions">
-                    <button class="btn btn-borrow" onclick="openBorrowModal('舊二頭超音波')">借出</button>
-                    <button class="btn btn-return" onclick="openReturnModal('舊二頭超音波')">歸還</button>
+                    <button class="btn btn-borrow" id="borrow-btn-old-ultrasound" onclick="openBorrowModal('舊二頭超音波')">借出</button>
+                    <button class="btn btn-return" id="return-btn-old-ultrasound" onclick="openReturnModal('舊二頭超音波')">歸還</button>
                 </div>
             </div>
         </div>
@@ -553,11 +573,28 @@
             });
         }
 
+        // 更新按鈕狀態
+        function updateButtonState(elementId, isBorrowed) {
+            const borrowBtn = document.getElementById(`borrow-btn-${elementId}`);
+            const returnBtn = document.getElementById(`return-btn-${elementId}`);
+
+            if (isBorrowed) {
+                // 已借出：歸還按鈕突出，借出按鈕淡化
+                borrowBtn.classList.remove('active');
+                returnBtn.classList.add('active');
+            } else {
+                // 可借用：借出按鈕突出，歸還按鈕淡化
+                borrowBtn.classList.add('active');
+                returnBtn.classList.remove('active');
+            }
+        }
+
         // 載入單一設備狀態
         async function loadDeviceStatus(deviceId) {
             const config = DEVICES[deviceId];
             const elementId = config.elementId;
 
+            const headerEl = document.getElementById(`header-${elementId}`);
             const statusBadge = document.getElementById(`status-${elementId}`);
             const userEl = document.getElementById(`user-${elementId}`);
             const locationEl = document.getElementById(`location-${elementId}`);
@@ -565,6 +602,7 @@
 
             statusBadge.textContent = '載入中...';
             statusBadge.className = 'status-badge unknown';
+            headerEl.className = 'device-header status-unknown';
 
             try {
                 const response = await fetch(`${SCRIPT_URL}?action=getLatest&deviceId=${encodeURIComponent(deviceId)}`);
@@ -579,12 +617,18 @@
                     if (record.borrowStatus === '借出') {
                         statusBadge.textContent = '借出中';
                         statusBadge.className = 'status-badge borrowed';
+                        headerEl.className = 'device-header status-borrowed';
+                        updateButtonState(elementId, true);
                     } else if (record.borrowStatus === '歸還') {
                         statusBadge.textContent = '可借用';
                         statusBadge.className = 'status-badge returned';
+                        headerEl.className = 'device-header status-available';
+                        updateButtonState(elementId, false);
                     } else {
                         statusBadge.textContent = record.borrowStatus || '未知';
                         statusBadge.className = 'status-badge unknown';
+                        headerEl.className = 'device-header status-unknown';
+                        updateButtonState(elementId, false);
                     }
                 } else {
                     userEl.textContent = '-';
@@ -592,11 +636,14 @@
                     timeEl.textContent = '-';
                     statusBadge.textContent = '無記錄';
                     statusBadge.className = 'status-badge unknown';
+                    headerEl.className = 'device-header status-unknown';
+                    updateButtonState(elementId, false);
                 }
             } catch (error) {
                 console.error('Error loading device status:', error);
                 statusBadge.textContent = '載入失敗';
                 statusBadge.className = 'status-badge unknown';
+                headerEl.className = 'device-header status-unknown';
             }
         }
 
