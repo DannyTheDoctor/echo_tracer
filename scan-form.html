@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>設備借還</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .device-name {
+            font-size: 18px;
+            color: #4285f4;
+            font-weight: 600;
+            padding: 10px;
+            background-color: #e8f0fe;
+            border-radius: 8px;
+        }
+
+        .type-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+
+        .type-badge.borrow {
+            background-color: #fce8e6;
+            color: #d93025;
+        }
+
+        .type-badge.return {
+            background-color: #e6f4ea;
+            color: #1e8e3e;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 40px;
+        }
+
+        .return-info {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .return-info .info-row {
+            display: flex;
+            margin-bottom: 12px;
+        }
+
+        .return-info .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .return-info .info-label {
+            color: #666;
+            width: 80px;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .return-info .info-value {
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button.borrow-btn {
+            background-color: #4285f4;
+            color: white;
+        }
+
+        button.borrow-btn:hover {
+            background-color: #3367d6;
+        }
+
+        button.return-btn {
+            background-color: #34a853;
+            color: white;
+        }
+
+        button.return-btn:hover {
+            background-color: #2d9249;
+        }
+
+        button[type="submit"]:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 14px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+            font-size: 16px;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .error-page {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .error-page h2 {
+            color: #d93025;
+            margin-bottom: 15px;
+        }
+
+        .error-page p {
+            color: #666;
+        }
+
+        .input-hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 6px;
+        }
+
+        .dashboard-link {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            margin-top: 15px;
+            background-color: #5f6368;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .dashboard-link:hover {
+            background-color: #4a4d51;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container" id="formContainer">
+        <!-- 內容由 JavaScript 動態產生 -->
+    </div>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzXrENtuA2vSzI3g1LebVl7T7Zk8_13OM76DrVBw_H6Gv9PSoEPqfbp4R_AwF4hOKW8qA/exec';
+
+        // 設備對應的歸還地點
+        const RETURN_LOCATIONS = {
+            'CVC echo': '8東儲藏室',
+            '新三頭超音波': '1118醫師辦公室',
+            '舊二頭超音波': '1118醫師辦公室'
+        };
+
+        // 借出地點選項
+        const BORROW_LOCATIONS = [
+            '4西', '5西', '6東', '6西', '7東', '8東',
+            '9西', '10西', '11西', '12西', '洗腎室', '詠愛病房'
+        ];
+
+        // 有效的設備 ID
+        const VALID_DEVICES = Object.keys(RETURN_LOCATIONS);
+
+        // 從 URL 取得參數
+        const urlParams = new URLSearchParams(window.location.search);
+        const deviceId = urlParams.get('device_id');
+        const actionType = urlParams.get('type');
+
+        // 驗證參數
+        function validateParams() {
+            if (!deviceId || !VALID_DEVICES.includes(deviceId)) {
+                return { valid: false, error: '無效的設備 ID' };
+            }
+            if (!actionType || !['借出', '歸還'].includes(actionType)) {
+                return { valid: false, error: '無效的操作類型' };
+            }
+            return { valid: true };
+        }
+
+        // 顯示錯誤頁面
+        function showErrorPage(message) {
+            document.getElementById('formContainer').innerHTML = `
+                <div class="error-page">
+                    <h2>參數錯誤</h2>
+                    <p>${message}</p>
+                    <p style="margin-top: 20px; font-size: 14px;">
+                        請確認 QR Code 是否正確<br>
+                        或聯繫管理員
+                    </p>
+                </div>
+            `;
+        }
+
+        // 顯示借出表單
+        function showBorrowForm() {
+            const locationOptions = BORROW_LOCATIONS.map(loc =>
+                `<option value="${loc}">${loc}</option>`
+            ).join('');
+
+            document.getElementById('formContainer').innerHTML = `
+                <div class="header">
+                    <h1>設備借用</h1>
+                    <div class="device-name">${deviceId}</div>
+                    <span class="type-badge borrow">借出</span>
+                </div>
+                <form id="deviceForm">
+                    <div class="form-group">
+                        <label for="phoneNumber">公務機號碼</label>
+                        <input type="text"
+                               id="phoneNumber"
+                               name="phoneNumber"
+                               required
+                               placeholder="請輸入4位數字"
+                               pattern="[0-9]{4}"
+                               maxlength="4"
+                               inputmode="numeric"
+                               autocomplete="off">
+                        <div class="input-hint">請輸入 4 位數字（例如：0912）</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">借出地點</label>
+                        <select id="location" name="location" required>
+                            <option value="">請選擇地點</option>
+                            ${locationOptions}
+                        </select>
+                    </div>
+                    <button type="submit" class="borrow-btn" id="submitBtn">確認借出</button>
+                </form>
+                <div id="message" class="message"></div>
+                <a href="dashboard.html" class="dashboard-link">查看設備狀態總覽</a>
+            `;
+
+            // 綁定表單事件
+            document.getElementById('deviceForm').addEventListener('submit', handleSubmit);
+
+            // 限制只能輸入數字
+            document.getElementById('phoneNumber').addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);
+            });
+        }
+
+        // 顯示歸還表單
+        function showReturnForm() {
+            const returnLocation = RETURN_LOCATIONS[deviceId];
+
+            document.getElementById('formContainer').innerHTML = `
+                <div class="header">
+                    <h1>設備歸還</h1>
+                    <div class="device-name">${deviceId}</div>
+                    <span class="type-badge return">歸還</span>
+                </div>
+                <div class="return-info">
+                    <div class="info-row">
+                        <span class="info-label">設備名稱</span>
+                        <span class="info-value">${deviceId}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">歸還地點</span>
+                        <span class="info-value">${returnLocation}</span>
+                    </div>
+                </div>
+                <form id="deviceForm">
+                    <button type="submit" class="return-btn" id="submitBtn">確認歸還</button>
+                </form>
+                <div id="message" class="message"></div>
+                <a href="dashboard.html" class="dashboard-link">查看設備狀態總覽</a>
+            `;
+
+            // 綁定表單事件
+            document.getElementById('deviceForm').addEventListener('submit', handleSubmit);
+        }
+
+        // 處理表單送出
+        async function handleSubmit(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            const messageDiv = document.getElementById('message');
+
+            // 準備資料
+            let data = {
+                deviceId: deviceId,
+                borrowStatus: actionType
+            };
+
+            if (actionType === '借出') {
+                const phoneNumber = document.getElementById('phoneNumber').value.trim();
+                const location = document.getElementById('location').value;
+
+                // 驗證公務機號碼
+                if (!/^[0-9]{4}$/.test(phoneNumber)) {
+                    messageDiv.textContent = '請輸入正確的 4 位數公務機號碼';
+                    messageDiv.className = 'message error';
+                    return;
+                }
+
+                data.username = phoneNumber;
+                data.location = location;
+            } else {
+                // 歸還時不需要公務機號碼
+                data.username = '-';
+                data.location = RETURN_LOCATIONS[deviceId];
+            }
+
+            // 停用按鈕
+            submitBtn.disabled = true;
+            submitBtn.textContent = '送出中...';
+            messageDiv.className = 'message';
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (actionType === '借出') {
+                    messageDiv.textContent = `${deviceId} 已借出至 ${data.location}`;
+                } else {
+                    messageDiv.textContent = `${deviceId} 已歸還至 ${data.location}`;
+                }
+                messageDiv.className = 'message success';
+
+                // 重設表單
+                if (actionType === '借出') {
+                    document.getElementById('deviceForm').reset();
+                }
+
+                submitBtn.disabled = false;
+                submitBtn.textContent = actionType === '借出' ? '確認借出' : '確認歸還';
+
+            } catch (error) {
+                messageDiv.textContent = '送出失敗，請稍後再試';
+                messageDiv.className = 'message error';
+                console.error('Error:', error);
+                submitBtn.disabled = false;
+                submitBtn.textContent = actionType === '借出' ? '確認借出' : '確認歸還';
+            }
+        }
+
+        // 初始化頁面
+        function init() {
+            const validation = validateParams();
+
+            if (!validation.valid) {
+                showErrorPage(validation.error);
+                return;
+            }
+
+            if (actionType === '借出') {
+                showBorrowForm();
+            } else {
+                showReturnForm();
+            }
+        }
+
+        // 執行初始化
+        init();
+    </script>
+</body>
+</html>

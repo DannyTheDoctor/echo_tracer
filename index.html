@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>設備借用表單</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            margin: 0 0 30px 0;
+            color: #333;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 14px;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #3367d6;
+        }
+
+        button[type="submit"]:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 4px;
+            text-align: center;
+            display: none;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>設備借用表單</h1>
+        <form id="deviceForm">
+            <div class="form-group">
+                <label for="username">使用者名稱</label>
+                <input type="text" id="username" name="username" required placeholder="請輸入使用者名稱">
+            </div>
+            <div class="form-group">
+                <label for="location">地點</label>
+                <input type="text" id="location" name="location" required placeholder="請輸入地點">
+            </div>
+            <button type="submit" id="submitBtn">送出</button>
+        </form>
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        // 請將此 URL 替換為您的 Google Apps Script Web App URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzXrENtuA2vSzI3g1LebVl7T7Zk8_13OM76DrVBw_H6Gv9PSoEPqfbp4R_AwF4hOKW8qA/exec';
+
+        document.getElementById('deviceForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            const messageDiv = document.getElementById('message');
+
+            // 取得表單資料
+            const username = document.getElementById('username').value.trim();
+            const location = document.getElementById('location').value.trim();
+
+            // 預設值
+            const deviceId = 'device_a';
+            const borrowStatus = '借出';
+
+            // 停用按鈕
+            submitBtn.disabled = true;
+            submitBtn.textContent = '送出中...';
+            messageDiv.className = 'message';
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        location: location,
+                        deviceId: deviceId,
+                        borrowStatus: borrowStatus
+                    })
+                });
+
+                // 因為使用 no-cors 模式，無法讀取回應內容，但請求會成功發送
+                messageDiv.textContent = '表單已成功送出！';
+                messageDiv.className = 'message success';
+
+                // 清空表單
+                document.getElementById('deviceForm').reset();
+
+            } catch (error) {
+                messageDiv.textContent = '送出失敗，請稍後再試。';
+                messageDiv.className = 'message error';
+                console.error('Error:', error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '送出';
+            }
+        });
+    </script>
+</body>
+</html>
