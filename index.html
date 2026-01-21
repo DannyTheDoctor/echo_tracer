@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>設備狀態總覽</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@900&family=Noto+Serif+TC:wght@500&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -21,10 +24,25 @@
             margin: 0 auto;
         }
 
-        h1 {
-            color: #333;
+        .title-container {
             text-align: center;
             margin-bottom: 30px;
+        }
+
+        .title-line1 {
+            color: #666;
+            font-size: 16px;
+            margin: 0;
+            font-family: 'Noto Serif TC', serif;
+            font-weight: 500;
+        }
+
+        .title-line2 {
+            color: #333;
+            font-size: 32px;
+            margin: 10px 0 0 0;
+            font-family: 'Noto Sans TC', sans-serif;
+            font-weight: 900;
         }
 
         .devices-grid {
@@ -50,8 +68,8 @@
             transition: background-color 0.3s;
         }
 
-        .device-header.status-available { background-color: #34a853; }
-        .device-header.status-borrowed { background-color: #d93025; }
+        .device-header.status-available { background-color: #449944; }
+        .device-header.status-borrowed { background-color: #8b3635; }
         .device-header.status-unknown { background-color: #9e9e9e; }
 
         .device-header h2 {
@@ -117,71 +135,54 @@
         .btn {
             flex: 1;
             padding: 10px 16px;
-            border: none;
+            border: 2px solid #5f6368;
             border-radius: 4px;
             font-size: 14px;
             cursor: pointer;
             transition: all 0.3s;
+            background-color: white;
+            color: #5f6368;
         }
 
-        .btn-borrow {
-            background-color: #e0e0e0;
-            color: #888;
-        }
-
-        .btn-borrow:hover {
-            background-color: #d0d0d0;
-        }
-
-        .btn-borrow.active {
-            background-color: #4285f4;
-            color: white;
-        }
-
-        .btn-borrow.active:hover {
-            background-color: #3367d6;
-        }
-
-        .btn-return {
-            background-color: #e0e0e0;
-            color: #888;
-        }
-
-        .btn-return:hover {
-            background-color: #d0d0d0;
-        }
-
-        .btn-return.active {
-            background-color: #34a853;
-            color: white;
-        }
-
-        .btn-return.active:hover {
-            background-color: #2d9249;
+        .btn:hover {
+            background-color: #f8f9fa;
         }
 
         .btn:disabled {
-            background-color: #ccc;
+            border-color: #ccc;
+            color: #ccc;
             cursor: not-allowed;
+            background-color: white;
         }
 
         .refresh-section {
             text-align: center;
-            margin-bottom: 20px;
+            margin-top: 30px;
         }
 
         .btn-refresh {
-            padding: 10px 24px;
+            padding: 16px 48px;
             background-color: #5f6368;
             color: white;
             border: none;
-            border-radius: 4px;
-            font-size: 14px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 500;
             cursor: pointer;
+            width: 400px;
+            max-width: 100%;
         }
 
         .btn-refresh:hover {
             background-color: #4a4d51;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
         }
 
         .loading {
@@ -346,10 +347,9 @@
 </head>
 <body>
     <div class="container">
-        <h1>設備狀態總覽</h1>
-
-        <div class="refresh-section">
-            <button class="btn-refresh" onclick="loadAllDevices()">重新整理</button>
+        <div class="title-container">
+            <p class="title-line1">臺北市立聯合醫院仁愛院區</p>
+            <h1 class="title-line2">🧭超音波追蹤器2.0</h1>
         </div>
 
         <div class="devices-grid">
@@ -433,6 +433,14 @@
         </div>
 
         <div id="globalMessage" class="message"></div>
+
+        <div class="refresh-section">
+            <button class="btn-refresh" onclick="loadAllDevices()">重新整理</button>
+        </div>
+
+        <div class="copyright">
+            © 2026 Yang Hao Wei. All Rights Reserved.
+        </div>
     </div>
 
     <!-- 借出 Modal -->
@@ -508,6 +516,7 @@
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyO8RH5s8lsvvyhjALXc29yO5j35FCQnWw5vnuf6FZr0Fx7YudsIwrzcXPeUP3tgp0tMw/exec';
 
         // 設備配置
+        // 注意：設備名稱必須與 Google Sheet 中的「設備ID」欄位完全一致（包括空格和大小寫）
         const DEVICES = {
             'CVC echo': {
                 elementId: 'cvc-echo',
@@ -605,8 +614,10 @@
             headerEl.className = 'device-header status-unknown';
 
             try {
+                console.log('Loading device status for:', deviceId);
                 const response = await fetch(`${SCRIPT_URL}?action=getLatest&deviceId=${encodeURIComponent(deviceId)}`);
                 const data = await response.json();
+                console.log('Response data for', deviceId, ':', data);
 
                 if (data.status === 'success' && data.data) {
                     const record = data.data;
@@ -631,6 +642,7 @@
                         updateButtonState(elementId, false);
                     }
                 } else {
+                    console.log('No data found for', deviceId);
                     userEl.textContent = '-';
                     locationEl.textContent = '-';
                     timeEl.textContent = '-';
@@ -640,7 +652,7 @@
                     updateButtonState(elementId, false);
                 }
             } catch (error) {
-                console.error('Error loading device status:', error);
+                console.error('Error loading device status for', deviceId, ':', error);
                 statusBadge.textContent = '載入失敗';
                 statusBadge.className = 'status-badge unknown';
                 headerEl.className = 'device-header status-unknown';
