@@ -30,7 +30,7 @@
         }
 
         .title-line1 {
-            color: #666;
+            color: #334155;
             font-size: 16px;
             margin: 0;
             font-family: 'Noto Serif TC', serif;
@@ -38,7 +38,7 @@
         }
 
         .title-line2 {
-            color: #333;
+            color: #334155;
             font-size: 32px;
             margin: 10px 0 0 0;
             font-family: 'Noto Sans TC', sans-serif;
@@ -68,8 +68,8 @@
             transition: background-color 0.3s;
         }
 
-        .device-header.status-available { background-color: #449944; }
-        .device-header.status-borrowed { background-color: #8b3635; }
+        .device-header.status-available { background-color: #307351; }
+        .device-header.status-borrowed { background-color: #A93F55; }
         .device-header.status-unknown { background-color: #9e9e9e; }
 
         .device-header h2 {
@@ -114,34 +114,33 @@
         }
 
         .info-label {
-            color: #666;
+            color: #334155;
             width: 80px;
             flex-shrink: 0;
         }
 
         .info-value {
-            color: #333;
+            color: #334155;
             font-weight: 500;
         }
 
         .device-actions {
             padding: 15px 20px;
-            background-color: #f9f9f9;
-            border-top: 1px solid #eee;
+            background-color: white;
             display: flex;
             gap: 10px;
         }
 
         .btn {
-            flex: 1;
+            width: 100%;
             padding: 10px 16px;
-            border: 2px solid #5f6368;
+            border: 2px solid #334155;
             border-radius: 4px;
             font-size: 14px;
             cursor: pointer;
             transition: all 0.3s;
             background-color: white;
-            color: #5f6368;
+            color: #334155;
         }
 
         .btn:hover {
@@ -181,12 +180,12 @@
             text-align: center;
             margin-top: 20px;
             padding: 20px;
-            color: #666;
+            color: #334155;
             font-size: 14px;
         }
 
         .loading {
-            color: #666;
+            color: #334155;
             font-style: italic;
         }
 
@@ -219,7 +218,7 @@
 
         .modal-content h3 {
             margin: 0 0 20px 0;
-            color: #333;
+            color: #334155;
         }
 
         .form-group {
@@ -229,7 +228,7 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #555;
+            color: #334155;
             font-weight: 500;
         }
 
@@ -259,7 +258,7 @@
 
         .input-hint {
             font-size: 12px;
-            color: #888;
+            color: #334155;
             margin-top: 6px;
         }
 
@@ -280,14 +279,14 @@
         }
 
         .return-info .info-label {
-            color: #666;
+            color: #334155;
             width: 80px;
             flex-shrink: 0;
             font-size: 14px;
         }
 
         .return-info .info-value {
-            color: #333;
+            color: #334155;
             font-weight: 600;
             font-size: 14px;
         }
@@ -300,7 +299,7 @@
 
         .btn-cancel {
             background-color: #f1f3f4;
-            color: #333;
+            color: #334155;
         }
 
         .btn-cancel:hover {
@@ -361,12 +360,12 @@
                 </div>
                 <div class="device-body">
                     <div class="info-row">
-                        <span class="info-label">公務機</span>
-                        <span class="info-value" id="user-cvc-echo">-</span>
-                    </div>
-                    <div class="info-row">
                         <span class="info-label">地點</span>
                         <span class="info-value" id="location-cvc-echo">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">公務機</span>
+                        <span class="info-value" id="user-cvc-echo">-</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">更新時間</span>
@@ -387,12 +386,12 @@
                 </div>
                 <div class="device-body">
                     <div class="info-row">
-                        <span class="info-label">公務機</span>
-                        <span class="info-value" id="user-new-ultrasound">-</span>
-                    </div>
-                    <div class="info-row">
                         <span class="info-label">地點</span>
                         <span class="info-value" id="location-new-ultrasound">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">公務機</span>
+                        <span class="info-value" id="user-new-ultrasound">-</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">更新時間</span>
@@ -413,12 +412,12 @@
                 </div>
                 <div class="device-body">
                     <div class="info-row">
-                        <span class="info-label">公務機</span>
-                        <span class="info-value" id="user-old-ultrasound">-</span>
-                    </div>
-                    <div class="info-row">
                         <span class="info-label">地點</span>
                         <span class="info-value" id="location-old-ultrasound">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">公務機</span>
+                        <span class="info-value" id="user-old-ultrasound">-</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">更新時間</span>
@@ -577,7 +576,6 @@
                 day: '2-digit',
                 hour: '2-digit',
                 minute: '2-digit',
-                second: '2-digit',
                 hour12: false
             });
         }
@@ -588,13 +586,13 @@
             const returnBtn = document.getElementById(`return-btn-${elementId}`);
 
             if (isBorrowed) {
-                // 已借出：歸還按鈕突出，借出按鈕淡化
-                borrowBtn.classList.remove('active');
-                returnBtn.classList.add('active');
+                // 已借出：只顯示歸還按鈕
+                borrowBtn.style.display = 'none';
+                returnBtn.style.display = 'block';
             } else {
-                // 可借用：借出按鈕突出，歸還按鈕淡化
-                borrowBtn.classList.add('active');
-                returnBtn.classList.remove('active');
+                // 可借用：只顯示借出按鈕
+                borrowBtn.style.display = 'block';
+                returnBtn.style.display = 'none';
             }
         }
 
