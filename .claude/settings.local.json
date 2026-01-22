@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:docs.google.com)"
+      "WebFetch(domain:docs.google.com)",
+      "Skill(ui-ux-pro-max)",
+      "Bash(dir:*)",
+      "Bash(python skills/ui-ux-pro-max/scripts/search.py:*)"
     ]
   }
 }
