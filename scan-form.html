@@ -60,12 +60,12 @@
 
         .type-badge.borrow {
             background-color: #fce8e6;
-            color: #d93025;
+            color: #A93F55;
         }
 
         .type-badge.return {
             background-color: #e6f4ea;
-            color: #1e8e3e;
+            color: #307351;
         }
 
         .form-group {
@@ -95,7 +95,7 @@
         input[type="text"]:focus,
         select:focus {
             outline: none;
-            border-color: #4285f4;
+            border-color: #334155;
         }
 
         select {
@@ -146,21 +146,21 @@
         }
 
         button.borrow-btn {
-            background-color: #4285f4;
+            background-color: #334155;
             color: white;
         }
 
         button.borrow-btn:hover {
-            background-color: #3367d6;
+            background-color: #1e293b;
         }
 
         button.return-btn {
-            background-color: #34a853;
+            background-color: #334155;
             color: white;
         }
 
         button.return-btn:hover {
-            background-color: #2d9249;
+            background-color: #1e293b;
         }
 
         button[type="submit"]:disabled {
@@ -214,8 +214,8 @@
             width: 100%;
             padding: 14px;
             margin-top: 15px;
-            background-color: #5f6368;
-            color: white;
+            background-color: white;
+            color: #334155;
             text-align: center;
             text-decoration: none;
             border-radius: 8px;
@@ -225,7 +225,7 @@
         }
 
         .dashboard-link:hover {
-            background-color: #4a4d51;
+            color: #4d5e77;
         }
     </style>
 </head>
@@ -292,7 +292,7 @@
 
             document.getElementById('formContainer').innerHTML = `
                 <div class="header">
-                    <h1>設備借用</h1>
+                    <h1>🧭超音波追蹤器2.0</h1>
                     <div class="device-name">${deviceId}</div>
                     <span class="type-badge borrow">借出</span>
                 </div>
@@ -338,7 +338,7 @@
 
             document.getElementById('formContainer').innerHTML = `
                 <div class="header">
-                    <h1>設備歸還</h1>
+                    <h1>🧭超音波追蹤器2.0</h1>
                     <div class="device-name">${deviceId}</div>
                     <span class="type-badge return">歸還</span>
                 </div>
