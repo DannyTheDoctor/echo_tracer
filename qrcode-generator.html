@@ -3,18 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code 產生器</title>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;900&family=Noto+Serif+TC:wght@500&display=swap" rel="stylesheet">
+    <title>URL 產生器 - 超音波追蹤器</title>
     <style>
+        :root {
+            --color-primary: #334155;
+            --color-primary-hover: #1e293b;
+            --color-available: #307351;
+            --color-borrowed: #A93F55;
+            --color-text-primary: #334155;
+            --color-text-secondary: #64748b;
+            --color-border: #e2e8f0;
+            --color-bg: #f8fafc;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition-base: 200ms ease;
+        }
+
         * {
             box-sizing: border-box;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f5f5f5;
+            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             margin: 0;
-            padding: 20px;
+            padding: var(--spacing-lg) var(--spacing-md);
+            color: var(--color-text-primary);
+            min-height: 100vh;
         }
 
         .container {
@@ -22,223 +50,354 @@
             margin: 0 auto;
         }
 
-        h1 {
+        .header {
             text-align: center;
-            color: #333;
-            margin-bottom: 10px;
+            margin-bottom: var(--spacing-2xl);
+            animation: fadeInDown 0.6s ease;
         }
 
-        .instructions {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-subtitle {
+            color: var(--color-text-secondary);
             font-size: 14px;
-        }
-
-        .base-url-section {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .base-url-section label {
-            display: block;
-            margin-bottom: 8px;
+            font-family: 'Noto Serif TC', serif;
             font-weight: 500;
-            color: #333;
+            margin: 0 0 var(--spacing-sm) 0;
+            letter-spacing: 0.5px;
         }
 
-        .base-url-section input {
+        .header-title {
+            color: var(--color-text-primary);
+            font-size: clamp(24px, 5vw, 36px);
+            font-family: 'Noto Sans TC', sans-serif;
+            font-weight: 900;
+            margin: 0 0 var(--spacing-sm) 0;
+        }
+
+        .header-description {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .url-input-section {
+            background: white;
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--spacing-2xl);
+            animation: fadeInUp 0.6s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            color: var(--color-text-primary);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
+            padding: var(--spacing-md);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-family: inherit;
+            transition: all var(--transition-base);
         }
 
-        .base-url-section input:focus {
+        .form-group input:focus {
             outline: none;
-            border-color: #4285f4;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(51, 65, 85, 0.1);
         }
 
-        .base-url-section button {
-            margin-top: 15px;
-            padding: 10px 20px;
-            background-color: #4285f4;
-            color: white;
+        .button-group {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: var(--spacing-md) var(--spacing-lg);
             border: none;
-            border-radius: 4px;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 14px;
+            transition: all var(--transition-base);
+            font-family: inherit;
+            flex: 1;
+            min-width: 140px;
         }
 
-        .base-url-section button:hover {
-            background-color: #3367d6;
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--color-primary);
+            border: 2px solid var(--color-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-primary);
+            color: white;
         }
 
         .devices-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
         }
 
-        .device-section {
+        .device-card {
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
             overflow: hidden;
+            animation: fadeInUp 0.6s ease;
+            animation-fill-mode: backwards;
         }
+
+        .device-card:nth-child(1) { animation-delay: 0.1s; }
+        .device-card:nth-child(2) { animation-delay: 0.2s; }
+        .device-card:nth-child(3) { animation-delay: 0.3s; }
 
         .device-header {
-            padding: 15px 20px;
-            background-color: #4285f4;
+            padding: var(--spacing-lg);
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
             color: white;
         }
 
         .device-header h2 {
             margin: 0;
-            font-size: 18px;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
         }
 
-        .qr-cards {
-            padding: 20px;
+        .device-body {
+            padding: var(--spacing-lg);
         }
 
-        .qr-card {
-            margin-bottom: 25px;
-            padding-bottom: 25px;
-            border-bottom: 1px solid #eee;
+        .url-section {
+            margin-bottom: var(--spacing-lg);
         }
 
-        .qr-card:last-child {
+        .url-section:last-child {
             margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
         }
 
-        .qr-card h3 {
-            margin: 0 0 15px 0;
-            font-size: 16px;
+        .url-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin: 0 0 var(--spacing-md) 0;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--spacing-sm);
         }
 
-        .qr-card h3.borrow {
-            color: #d93025;
+        .url-section-title.borrow {
+            color: var(--color-borrowed);
         }
 
-        .qr-card h3.return {
-            color: #1e8e3e;
-        }
-
-        .qr-code-wrapper {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .qr-code-wrapper canvas {
-            border: 1px solid #eee;
-            border-radius: 8px;
+        .url-section-title.return {
+            color: var(--color-available);
         }
 
         .url-display {
-            background-color: #f8f9fa;
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 11px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            font-size: 12px;
             word-break: break-all;
-            color: #666;
-            margin-bottom: 10px;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-sm);
+            border: 1px solid var(--color-border);
+            font-family: 'Courier New', monospace;
         }
 
         .copy-btn {
             width: 100%;
-            padding: 8px;
-            background-color: #5f6368;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background-color: var(--color-primary);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            font-size: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all var(--transition-base);
         }
 
         .copy-btn:hover {
-            background-color: #4a4d51;
+            background-color: var(--color-primary-hover);
         }
 
         .copy-btn.copied {
-            background-color: #34a853;
+            background-color: var(--color-available);
         }
 
-        .print-section {
+        .action-section {
             text-align: center;
-            margin-top: 30px;
+            margin-top: var(--spacing-2xl);
         }
 
-        .print-btn {
-            padding: 12px 30px;
-            background-color: #333;
+        .btn-back {
+            padding: var(--spacing-md) var(--spacing-xl);
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
             color: white;
             border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            border-radius: var(--radius-md);
             font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            box-shadow: var(--shadow-lg);
+            transition: all var(--transition-base);
         }
 
-        .print-btn:hover {
-            background-color: #555;
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
 
-        @media print {
+        .copyright {
+            text-align: center;
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            color: var(--color-text-secondary);
+            font-size: 13px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-2xl);
+            color: var(--color-text-secondary);
+        }
+
+        @media (max-width: 768px) {
             body {
-                background: white;
-                padding: 0;
-            }
-
-            .base-url-section,
-            .print-section,
-            .copy-btn,
-            .instructions {
-                display: none;
+                padding: var(--spacing-md);
             }
 
             .devices-grid {
-                display: block;
+                grid-template-columns: 1fr;
+                gap: var(--spacing-md);
             }
 
-            .device-section {
-                page-break-inside: avoid;
-                margin-bottom: 30px;
-                box-shadow: none;
-                border: 1px solid #ddd;
+            .button-group {
+                flex-direction: column;
             }
 
-            .qr-card {
-                page-break-inside: avoid;
+            .btn {
+                width: 100%;
             }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        *:focus-visible {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>設備借還 QR Code 產生器</h1>
-        <p class="instructions">請先設定表單頁面的完整 URL，然後產生 QR Code</p>
-
-        <div class="base-url-section">
-            <label for="baseUrl">表單頁面 URL（scan-form.html 的完整網址）</label>
-            <input type="text" id="baseUrl" placeholder="例如：https://your-domain.com/scan-form.html" value="">
-            <button onclick="generateAllQRCodes()">產生所有 QR Code</button>
+        <!-- Header -->
+        <div class="header">
+            <p class="header-subtitle">臺北市立聯合醫院仁愛院區</p>
+            <h1 class="header-title">URL 產生器</h1>
+            <p class="header-description">產生設備借還表單的連結</p>
         </div>
 
+        <!-- URL Input Section -->
+        <div class="url-input-section">
+            <div class="form-group">
+                <label for="baseUrl">表單頁面網址（scan-form.html）</label>
+                <input type="text"
+                       id="baseUrl"
+                       placeholder="例如：https://your-domain.com/scan-form.html"
+                       value="">
+            </div>
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="autoFillCurrentUrl()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: inline; vertical-align: middle; margin-right: 4px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    自動帶入當前網址
+                </button>
+                <button class="btn btn-primary" onclick="generateUrls()">產生所有 URL</button>
+            </div>
+        </div>
+
+        <!-- Devices Grid -->
         <div class="devices-grid" id="devicesGrid">
-            <!-- QR Codes 將在這裡產生 -->
+            <div class="empty-state">
+                <p>請輸入表單頁面網址並點擊「產生所有 URL」</p>
+            </div>
         </div>
 
-        <div class="print-section">
-            <button class="print-btn" onclick="window.print()">列印所有 QR Code</button>
+        <!-- Action Section -->
+        <div class="action-section">
+            <a href="index.html" class="btn-back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                返回主頁
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <div class="copyright">
+            © 2026 Yang Hao Wei. All Rights Reserved.
         </div>
     </div>
 
@@ -249,83 +408,91 @@
             { id: '舊二頭超音波', returnLocation: '1118醫師辦公室' }
         ];
 
-        function generateAllQRCodes() {
+        // 自動帶入當前網址前綴 + scan-form.html
+        function autoFillCurrentUrl() {
+            const currentUrl = window.location.href;
+            const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + 'scan-form.html';
+            document.getElementById('baseUrl').value = baseUrl;
+        }
+
+        // 產生所有 URL
+        function generateUrls() {
             const baseUrl = document.getElementById('baseUrl').value.trim();
 
             if (!baseUrl) {
-                alert('請輸入表單頁面的 URL');
+                alert('請輸入表單頁面的網址');
                 return;
             }
 
             const grid = document.getElementById('devicesGrid');
             grid.innerHTML = '';
 
-            DEVICES.forEach(device => {
+            DEVICES.forEach((device, index) => {
                 const borrowUrl = `${baseUrl}?device_id=${encodeURIComponent(device.id)}&type=${encodeURIComponent('借出')}`;
                 const returnUrl = `${baseUrl}?device_id=${encodeURIComponent(device.id)}&type=${encodeURIComponent('歸還')}`;
 
-                const section = document.createElement('div');
-                section.className = 'device-section';
-                section.innerHTML = `
+                const card = document.createElement('div');
+                card.className = 'device-card';
+                card.style.animationDelay = `${0.1 * (index + 1)}s`;
+
+                card.innerHTML = `
                     <div class="device-header">
                         <h2>${device.id}</h2>
                     </div>
-                    <div class="qr-cards">
-                        <div class="qr-card">
-                            <h3 class="borrow">📤 借出</h3>
-                            <div class="qr-code-wrapper">
-                                <canvas id="qr-borrow-${device.id.replace(/\s/g, '-')}"></canvas>
+                    <div class="device-body">
+                        <div class="url-section">
+                            <div class="url-section-title borrow">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                                </svg>
+                                借出
                             </div>
                             <div class="url-display">${borrowUrl}</div>
-                            <button class="copy-btn" onclick="copyUrl(this, '${borrowUrl}')">複製 URL</button>
+                            <button class="copy-btn" onclick="copyUrl(this, '${borrowUrl.replace(/'/g, "\\'")}')">複製 URL</button>
                         </div>
-                        <div class="qr-card">
-                            <h3 class="return">📥 歸還（至 ${device.returnLocation}）</h3>
-                            <div class="qr-code-wrapper">
-                                <canvas id="qr-return-${device.id.replace(/\s/g, '-')}"></canvas>
+                        <div class="url-section">
+                            <div class="url-section-title return">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1-4l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
+                                歸還（至 ${device.returnLocation}）
                             </div>
                             <div class="url-display">${returnUrl}</div>
-                            <button class="copy-btn" onclick="copyUrl(this, '${returnUrl}')">複製 URL</button>
+                            <button class="copy-btn" onclick="copyUrl(this, '${returnUrl.replace(/'/g, "\\'")}')">複製 URL</button>
                         </div>
                     </div>
                 `;
 
-                grid.appendChild(section);
-
-                // 產生 QR Code
-                setTimeout(() => {
-                    QRCode.toCanvas(
-                        document.getElementById(`qr-borrow-${device.id.replace(/\s/g, '-')}`),
-                        borrowUrl,
-                        { width: 200, margin: 2 }
-                    );
-                    QRCode.toCanvas(
-                        document.getElementById(`qr-return-${device.id.replace(/\s/g, '-')}`),
-                        returnUrl,
-                        { width: 200, margin: 2 }
-                    );
-                }, 100);
+                grid.appendChild(card);
             });
         }
 
+        // 複製 URL 到剪貼簿
         function copyUrl(btn, url) {
             navigator.clipboard.writeText(url).then(() => {
+                const originalText = btn.textContent;
                 btn.textContent = '已複製！';
                 btn.classList.add('copied');
                 setTimeout(() => {
-                    btn.textContent = '複製 URL';
+                    btn.textContent = originalText;
                     btn.classList.remove('copied');
                 }, 2000);
+            }).catch(err => {
+                alert('複製失敗，請手動複製');
+                console.error('Copy failed:', err);
             });
         }
 
-        // 如果 URL 中有 base 參數，自動填入
-        const urlParams = new URLSearchParams(window.location.search);
-        const baseParam = urlParams.get('base');
-        if (baseParam) {
-            document.getElementById('baseUrl').value = baseParam;
-            generateAllQRCodes();
-        }
+        // 頁面載入時檢查 URL 參數
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const baseParam = urlParams.get('base');
+
+            if (baseParam) {
+                document.getElementById('baseUrl').value = baseParam;
+                generateUrls();
+            }
+        });
     </script>
 </body>
 </html>
