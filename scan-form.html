@@ -3,50 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title>設備借還</title>
     <style>
+        :root {
+            --color-primary: #334155;
+            --color-primary-hover: #1e293b;
+            --color-available: #307351;
+            --color-borrowed: #A93F55;
+            --color-text-primary: #334155;
+            --color-text-secondary: #64748b;
+            --color-border: #e2e8f0;
+            --color-bg: #f8fafc;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --transition-base: 200ms ease;
+        }
+
         * {
             box-sizing: border-box;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f5f5f5;
+            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            color: var(--color-text-primary);
         }
 
         .form-container {
             background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 28px;
         }
 
         .header h1 {
-            margin: 0 0 10px 0;
-            font-size: 24px;
-            color: #333;
+            margin: 0 0 12px 0;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .header-icon {
+            width: 24px;
+            height: 24px;
         }
 
         .device-name {
             font-size: 18px;
-            color: #4285f4;
-            font-weight: 600;
-            padding: 10px;
-            background-color: #e8f0fe;
-            border-radius: 8px;
+            color: var(--color-primary);
+            font-weight: 700;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-radius: 10px;
+            border: 2px solid var(--color-border);
         }
 
         .type-badge {
@@ -69,52 +111,63 @@
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         label {
             display: block;
             margin-bottom: 8px;
-            color: #555;
-            font-weight: 500;
+            color: var(--color-text-primary);
+            font-weight: 600;
             font-size: 14px;
         }
 
         input[type="text"],
         select {
             width: 100%;
-            padding: 14px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            padding: 14px 16px;
+            border: 2px solid var(--color-border);
+            border-radius: 10px;
             font-size: 16px;
-            transition: border-color 0.3s;
+            font-family: inherit;
+            transition: all var(--transition-base);
             -webkit-appearance: none;
             appearance: none;
+            background-color: white;
         }
 
         input[type="text"]:focus,
         select:focus {
             outline: none;
-            border-color: #334155;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(51, 65, 85, 0.1);
+        }
+
+        input[type="text"]:hover:not(:focus),
+        select:hover:not(:focus) {
+            border-color: #cbd5e1;
         }
 
         select {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23334155' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 14px center;
             padding-right: 40px;
+            cursor: pointer;
         }
 
         .return-info {
-            background-color: #f8f9fa;
-            border-radius: 8px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
             padding: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
+            border: 2px solid var(--color-border);
         }
 
         .return-info .info-row {
             display: flex;
             margin-bottom: 12px;
+            padding: 4px 0;
         }
 
         .return-info .info-row:last-child {
@@ -122,70 +175,89 @@
         }
 
         .return-info .info-label {
-            color: #666;
-            width: 80px;
+            color: var(--color-text-secondary);
+            width: 90px;
             flex-shrink: 0;
             font-size: 14px;
+            font-weight: 600;
         }
 
         .return-info .info-value {
-            color: #333;
-            font-weight: 600;
-            font-size: 14px;
+            color: var(--color-text-primary);
+            font-weight: 700;
+            font-size: 15px;
         }
 
         button[type="submit"] {
             width: 100%;
             padding: 16px;
             border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: 600;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 700;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all var(--transition-base);
+            box-shadow: var(--shadow-md);
+            font-family: inherit;
         }
 
-        button.borrow-btn {
-            background-color: #334155;
-            color: white;
-        }
-
-        button.borrow-btn:hover {
-            background-color: #1e293b;
-        }
-
+        button.borrow-btn,
         button.return-btn {
-            background-color: #334155;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
             color: white;
         }
 
+        button.borrow-btn:hover,
         button.return-btn:hover {
-            background-color: #1e293b;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        button.borrow-btn:active,
+        button.return-btn:active {
+            transform: translateY(0);
         }
 
         button[type="submit"]:disabled {
-            background-color: #ccc;
+            background: #cbd5e1;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: var(--shadow-sm);
         }
 
         .message {
             margin-top: 20px;
-            padding: 14px;
-            border-radius: 8px;
+            padding: 14px 16px;
+            border-radius: 10px;
             text-align: center;
             display: none;
-            font-size: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .message.success {
-            background-color: #d4edda;
-            color: #155724;
+            background-color: #dcfce7;
+            color: #166534;
+            border: 2px solid #bbf7d0;
             display: block;
         }
 
         .message.error {
-            background-color: #f8d7da;
-            color: #721c24;
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #fecaca;
             display: block;
         }
 
@@ -195,17 +267,19 @@
         }
 
         .error-page h2 {
-            color: #d93025;
+            color: #dc2626;
             margin-bottom: 15px;
+            font-weight: 700;
         }
 
         .error-page p {
-            color: #666;
+            color: var(--color-text-secondary);
+            line-height: 1.6;
         }
 
         .input-hint {
             font-size: 12px;
-            color: #888;
+            color: var(--color-text-secondary);
             margin-top: 6px;
         }
 
@@ -213,19 +287,51 @@
             display: block;
             width: 100%;
             padding: 14px;
-            margin-top: 15px;
+            margin-top: 16px;
             background-color: white;
-            color: #334155;
+            color: var(--color-primary);
             text-align: center;
             text-decoration: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 500;
-            transition: background-color 0.3s;
+            border-radius: 10px;
+            border: 2px solid var(--color-border);
+            font-size: 15px;
+            font-weight: 600;
+            transition: all var(--transition-base);
         }
 
         .dashboard-link:hover {
-            color: #4d5e77;
+            background-color: #f8fafc;
+            border-color: var(--color-primary);
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 480px) {
+            .form-container {
+                padding: 24px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .device-name {
+                font-size: 16px;
+            }
+        }
+
+        /* 無障礙設計 */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        *:focus-visible {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
         }
     </style>
 </head>
@@ -292,7 +398,12 @@
 
             document.getElementById('formContainer').innerHTML = `
                 <div class="header">
-                    <h1>🧭超音波追蹤器2.0</h1>
+                    <h1>
+                        <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                        </svg>
+                        超音波追蹤器2.0
+                    </h1>
                     <div class="device-name">${deviceId}</div>
                     <span class="type-badge borrow">借出</span>
                 </div>
@@ -338,7 +449,12 @@
 
             document.getElementById('formContainer').innerHTML = `
                 <div class="header">
-                    <h1>🧭超音波追蹤器2.0</h1>
+                    <h1>
+                        <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                        </svg>
+                        超音波追蹤器2.0
+                    </h1>
                     <div class="device-name">${deviceId}</div>
                     <span class="type-badge return">歸還</span>
                 </div>
