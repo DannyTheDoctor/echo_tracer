@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@500&display=swap" rel="stylesheet">
-    <title>北市聯醫仁愛院區超音波追蹤器2.0</title>
+    <title>總覽 - 北市聯醫仁愛院區超音波追蹤器2.0</title>
     <style>
         /* ============================================
            DESIGN SYSTEM - Healthcare Dashboard
@@ -749,9 +749,15 @@
                 </div>
                 <div class="device-actions">
                     <button class="btn btn-borrow" id="borrow-btn-cvc-echo" onclick="openBorrowModal('CVC echo')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1-4l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
                         <span>借出</span>
                     </button>
                     <button class="btn btn-return" id="return-btn-cvc-echo" onclick="openReturnModal('CVC echo')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                                </svg>
                         <span>歸還</span>
                     </button>
                 </div>
@@ -779,9 +785,15 @@
                 </div>
                 <div class="device-actions">
                     <button class="btn btn-borrow" id="borrow-btn-new-ultrasound" onclick="openBorrowModal('新三頭超音波')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1-4l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
                         <span>借出</span>
                     </button>
                     <button class="btn btn-return" id="return-btn-new-ultrasound" onclick="openReturnModal('新三頭超音波')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                                </svg>
                         <span>歸還</span>
                     </button>
                 </div>
@@ -809,9 +821,15 @@
                 </div>
                 <div class="device-actions">
                     <button class="btn btn-borrow" id="borrow-btn-old-ultrasound" onclick="openBorrowModal('舊二頭超音波')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1-4l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
                         <span>借出</span>
                     </button>
                     <button class="btn btn-return" id="return-btn-old-ultrasound" onclick="openReturnModal('舊二頭超音波')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                                </svg>
                         <span>歸還</span>
                     </button>
                 </div>
@@ -823,7 +841,7 @@
         <!-- Action Section -->
         <div class="action-section">
             <button class="btn-refresh" onclick="loadAllDevices()">
-                <span>🔄 重新整理</span>
+                <span>↻ 重新整理</span>
             </button>
         </div>
 
@@ -831,6 +849,7 @@
         <div class="copyright">
             © 2026 Yang Hao Wei. All Rights Reserved.
         </div>
+        
     </div>
 
     <!-- 借出 Modal -->
