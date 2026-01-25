@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@900&family=Noto+Serif+TC:wght@500&display=swap" rel="stylesheet">
+    <title>北市聯醫仁愛院區超音波追蹤器2.0</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .title-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title-line1 {
+            color: #334155;
+            font-size: 16px;
+            margin: 0;
+            font-family: 'Noto Serif TC', serif;
+            font-weight: 500;
+        }
+
+        .title-line2 {
+            color: #334155;
+            font-size: 32px;
+            margin: 10px 0 0 0;
+            font-family: 'Noto Sans TC', sans-serif;
+            font-weight: 900;
+        }
+
+        .devices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .device-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .device-header {
+            padding: 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #9e9e9e;
+            transition: background-color 0.3s;
+        }
+
+        .device-header.status-available { background-color: #307351; }
+        .device-header.status-borrowed { background-color: #A93F55; }
+        .device-header.status-unknown { background-color: #9e9e9e; }
+
+        .device-header h2 {
+            margin: 0;
+            font-size: 18px;
+            font-family: 'Noto Sans TC', sans-serif;
+
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .status-badge.borrowed {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #A93F55;
+        }
+
+        .status-badge.returned {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #307351;
+        }
+
+        .status-badge.unknown {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #666;
+        }
+
+        .device-body {
+            padding: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            color: #334155;
+            width: 80px;
+            flex-shrink: 0;
+        }
+
+        .info-value {
+            color: #334155;
+            font-weight: 500;
+        }
+
+        .device-actions {
+            padding: 15px 20px;
+            background-color: white;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px 16px;
+            border: 2px solid #334155;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: white;
+            color: #334155;
+        }
+
+        .btn:hover {
+            background-color: #f8f9fa;
+        }
+
+        .btn:disabled {
+            border-color: #ccc;
+            color: #ccc;
+            cursor: not-allowed;
+            background-color: white;
+        }
+
+        .refresh-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn-refresh {
+            padding: 6px 48px;
+            background-color: #334155;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .btn-refresh:hover {
+            background-color: #1e293b;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            color: #334155;
+            font-size: 14px;
+        }
+
+        .loading {
+            color: #334155;
+            font-style: italic;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content h3 {
+            margin: 0 0 20px 0;
+            color: #334155;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #334155;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #334155;
+        }
+
+        .form-group select {
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        .input-hint {
+            font-size: 12px;
+            color: #334155;
+            margin-top: 6px;
+        }
+
+        .return-info {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .return-info .info-row {
+            display: flex;
+            margin-bottom: 12px;
+        }
+
+        .return-info .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .return-info .info-label {
+            color: #334155;
+            width: 80px;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .return-info .info-value {
+            color: #334155;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-cancel {
+            background-color: #f1f3f4;
+            color: #334155;
+        }
+
+        .btn-cancel:hover {
+            background-color: #e8eaeb;
+        }
+
+        .btn-submit {
+            background-color: #334155;
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background-color: #1e293b;
+        }
+
+        .btn-submit.return-btn {
+            background-color: #334155;
+        }
+
+        .btn-submit.return-btn:hover {
+            background-color: #1e293b;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 4px;
+            text-align: center;
+            display: none;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title-container">
+            <p class="title-line1">臺北市立聯合醫院仁愛院區</p>
+            <h1 class="title-line2">🧭超音波追蹤器2.0</h1>
+        </div>
+
+        <div class="devices-grid">
+            <!-- CVC echo -->
+            <div class="device-card" id="card-cvc-echo">
+                <div class="device-header status-unknown" id="header-cvc-echo">
+                    <h2>CVC echo</h2>
+                    <span class="status-badge unknown" id="status-cvc-echo">載入中...</span>
+                </div>
+                <div class="device-body">
+                    <div class="info-row">
+                        <span class="info-label">地點</span>
+                        <span class="info-value" id="location-cvc-echo">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">公務機</span>
+                        <span class="info-value" id="user-cvc-echo">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">更新時間</span>
+                        <span class="info-value" id="time-cvc-echo">-</span>
+                    </div>
+                </div>
+                <div class="device-actions">
+                    <button class="btn btn-borrow" id="borrow-btn-cvc-echo" onclick="openBorrowModal('CVC echo')">借出</button>
+                    <button class="btn btn-return" id="return-btn-cvc-echo" onclick="openReturnModal('CVC echo')">歸還</button>
+                </div>
+            </div>
+
+            <!-- 新三頭超音波 -->
+            <div class="device-card" id="card-new-ultrasound">
+                <div class="device-header status-unknown" id="header-new-ultrasound">
+                    <h2>新三頭超音波</h2>
+                    <span class="status-badge unknown" id="status-new-ultrasound">載入中...</span>
+                </div>
+                <div class="device-body">
+                    <div class="info-row">
+                        <span class="info-label">地點</span>
+                        <span class="info-value" id="location-new-ultrasound">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">公務機</span>
+                        <span class="info-value" id="user-new-ultrasound">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">更新時間</span>
+                        <span class="info-value" id="time-new-ultrasound">-</span>
+                    </div>
+                </div>
+                <div class="device-actions">
+                    <button class="btn btn-borrow" id="borrow-btn-new-ultrasound" onclick="openBorrowModal('新三頭超音波')">借出</button>
+                    <button class="btn btn-return" id="return-btn-new-ultrasound" onclick="openReturnModal('新三頭超音波')">歸還</button>
+                </div>
+            </div>
+
+            <!-- 舊二頭超音波 -->
+            <div class="device-card" id="card-old-ultrasound">
+                <div class="device-header status-unknown" id="header-old-ultrasound">
+                    <h2>舊二頭超音波</h2>
+                    <span class="status-badge unknown" id="status-old-ultrasound">載入中...</span>
+                </div>
+                <div class="device-body">
+                    <div class="info-row">
+                        <span class="info-label">地點</span>
+                        <span class="info-value" id="location-old-ultrasound">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">公務機</span>
+                        <span class="info-value" id="user-old-ultrasound">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">更新時間</span>
+                        <span class="info-value" id="time-old-ultrasound">-</span>
+                    </div>
+                </div>
+                <div class="device-actions">
+                    <button class="btn btn-borrow" id="borrow-btn-old-ultrasound" onclick="openBorrowModal('舊二頭超音波')">借出</button>
+                    <button class="btn btn-return" id="return-btn-old-ultrasound" onclick="openReturnModal('舊二頭超音波')">歸還</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="globalMessage" class="message"></div>
+
+        <div class="refresh-section">
+            <button class="btn-refresh" onclick="loadAllDevices()">重新整理</button>
+        </div>
+
+        <div class="copyright">
+            © 2026 Yang Hao Wei. All Rights Reserved.
+        </div>
+    </div>
+
+    <!-- 借出 Modal -->
+    <div class="modal" id="borrowModal">
+        <div class="modal-content">
+            <h3 id="borrowModalTitle">借出設備</h3>
+            <form id="borrowForm">
+                <input type="hidden" id="borrowDeviceId">
+                <div class="form-group">
+                    <label for="borrowPhoneNumber">公務機號碼</label>
+                    <input type="text"
+                           id="borrowPhoneNumber"
+                           required
+                           placeholder="請輸入4位數字"
+                           pattern="[0-9]{4}"
+                           maxlength="4"
+                           inputmode="numeric"
+                           autocomplete="off">
+                    <div class="input-hint">請輸入 4 位數字（例如：0912）</div>
+                </div>
+                <div class="form-group">
+                    <label for="borrowLocation">借出地點</label>
+                    <select id="borrowLocation" required>
+                        <option value="">請選擇地點</option>
+                        <option value="4西">4西</option>
+                        <option value="5西">5西</option>
+                        <option value="6東">6東</option>
+                        <option value="6西">6西</option>
+                        <option value="7東">7東</option>
+                        <option value="8東">8東</option>
+                        <option value="9西">9西</option>
+                        <option value="10西">10西</option>
+                        <option value="11西">11西</option>
+                        <option value="12西">12西</option>
+                        <option value="洗腎室">洗腎室</option>
+                        <option value="詠愛病房">詠愛病房</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal('borrowModal')">取消</button>
+                    <button type="submit" class="btn btn-submit" id="borrowSubmitBtn">確認借出</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 歸還 Modal -->
+    <div class="modal" id="returnModal">
+        <div class="modal-content">
+            <h3 id="returnModalTitle">歸還設備</h3>
+            <form id="returnForm">
+                <input type="hidden" id="returnDeviceId">
+                <input type="hidden" id="returnLocation">
+                <div class="return-info">
+                    <div class="info-row">
+                        <span class="info-label">設備名稱</span>
+                        <span class="info-value" id="returnDeviceName">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">歸還地點</span>
+                        <span class="info-value" id="returnLocationDisplay">-</span>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal('returnModal')">取消</button>
+                    <button type="submit" class="btn btn-submit return-btn" id="returnSubmitBtn">確認歸還</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyO8RH5s8lsvvyhjALXc29yO5j35FCQnWw5vnuf6FZr0Fx7YudsIwrzcXPeUP3tgp0tMw/exec';
+
+        // 設備配置
+        // 注意：設備名稱必須與 Google Sheet 中的「設備ID」欄位完全一致（包括空格和大小寫）
+        const DEVICES = {
+            'CVC echo': {
+                elementId: 'cvc-echo',
+                returnLocation: '8東儲藏室'
+            },
+            '新三頭超音波': {
+                elementId: 'new-ultrasound',
+                returnLocation: '1118醫師辦公室'
+            },
+            '舊二頭超音波': {
+                elementId: 'old-ultrasound',
+                returnLocation: '1118醫師辦公室'
+            }
+        };
+
+        // 頁面載入時取得所有設備狀態
+        document.addEventListener('DOMContentLoaded', loadAllDevices);
+
+        // 載入所有設備狀態
+        async function loadAllDevices() {
+            Object.keys(DEVICES).forEach(deviceId => {
+                loadDeviceStatus(deviceId);
+            });
+        }
+
+        // 格式化公務機號碼為 4 位數字
+        function formatPhoneNumber(value) {
+            if (!value || value === '-') return '-';
+            // 轉為字串並補零至 4 位
+            return String(value).padStart(4, '0');
+        }
+
+        // 格式化時間為本地時間
+        function formatLocalTime(timestamp) {
+            if (!timestamp) return '-';
+
+            let date;
+
+            // 處理不同格式的時間戳記
+            if (typeof timestamp === 'string') {
+                // 嘗試解析字串格式的時間
+                date = new Date(timestamp);
+            } else if (timestamp instanceof Date) {
+                date = timestamp;
+            } else {
+                return timestamp;
+            }
+
+            // 檢查是否為有效日期
+            if (isNaN(date.getTime())) {
+                return timestamp;
+            }
+
+            // 格式化為本地時間
+            return date.toLocaleString('zh-TW', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+        }
+
+        // 更新按鈕狀態
+        function updateButtonState(elementId, isBorrowed) {
+            const borrowBtn = document.getElementById(`borrow-btn-${elementId}`);
+            const returnBtn = document.getElementById(`return-btn-${elementId}`);
+
+            if (isBorrowed) {
+                // 已借出：只顯示歸還按鈕
+                borrowBtn.style.display = 'none';
+                returnBtn.style.display = 'block';
+            } else {
+                // 可借用：只顯示借出按鈕
+                borrowBtn.style.display = 'block';
+                returnBtn.style.display = 'none';
+            }
+        }
+
+        // 載入單一設備狀態
+        async function loadDeviceStatus(deviceId) {
+            const config = DEVICES[deviceId];
+            const elementId = config.elementId;
+
+            const headerEl = document.getElementById(`header-${elementId}`);
+            const statusBadge = document.getElementById(`status-${elementId}`);
+            const userEl = document.getElementById(`user-${elementId}`);
+            const locationEl = document.getElementById(`location-${elementId}`);
+            const timeEl = document.getElementById(`time-${elementId}`);
+
+            statusBadge.textContent = '載入中...';
+            statusBadge.className = 'status-badge unknown';
+            headerEl.className = 'device-header status-unknown';
+
+            try {
+                console.log('Loading device status for:', deviceId);
+                const response = await fetch(`${SCRIPT_URL}?action=getLatest&deviceId=${encodeURIComponent(deviceId)}`);
+                const data = await response.json();
+                console.log('Response data for', deviceId, ':', data);
+
+                if (data.status === 'success' && data.data) {
+                    const record = data.data;
+                    userEl.textContent = formatPhoneNumber(record.username);
+                    locationEl.textContent = record.location || '-';
+                    timeEl.textContent = formatLocalTime(record.timestamp);
+
+                    if (record.borrowStatus === '借出') {
+                        statusBadge.textContent = '借出中';
+                        statusBadge.className = 'status-badge borrowed';
+                        headerEl.className = 'device-header status-borrowed';
+                        updateButtonState(elementId, true);
+                    } else if (record.borrowStatus === '歸還') {
+                        statusBadge.textContent = '可借用';
+                        statusBadge.className = 'status-badge returned';
+                        headerEl.className = 'device-header status-available';
+                        updateButtonState(elementId, false);
+                    } else {
+                        statusBadge.textContent = record.borrowStatus || '未知';
+                        statusBadge.className = 'status-badge unknown';
+                        headerEl.className = 'device-header status-unknown';
+                        updateButtonState(elementId, false);
+                    }
+                } else {
+                    console.log('No data found for', deviceId);
+                    userEl.textContent = '-';
+                    locationEl.textContent = '-';
+                    timeEl.textContent = '-';
+                    statusBadge.textContent = '無記錄';
+                    statusBadge.className = 'status-badge unknown';
+                    headerEl.className = 'device-header status-unknown';
+                    updateButtonState(elementId, false);
+                }
+            } catch (error) {
+                console.error('Error loading device status for', deviceId, ':', error);
+                statusBadge.textContent = '載入失敗';
+                statusBadge.className = 'status-badge unknown';
+                headerEl.className = 'device-header status-unknown';
+            }
+        }
+
+        // 開啟借出 Modal
+        function openBorrowModal(deviceId) {
+            document.getElementById('borrowDeviceId').value = deviceId;
+            document.getElementById('borrowModalTitle').textContent = `借出設備 - ${deviceId}`;
+            document.getElementById('borrowPhoneNumber').value = '';
+            document.getElementById('borrowLocation').value = '';
+            document.getElementById('borrowModal').classList.add('active');
+        }
+
+        // 開啟歸還 Modal
+        function openReturnModal(deviceId) {
+            const config = DEVICES[deviceId];
+            document.getElementById('returnDeviceId').value = deviceId;
+            document.getElementById('returnLocation').value = config.returnLocation;
+            document.getElementById('returnModalTitle').textContent = `歸還設備 - ${deviceId}`;
+            document.getElementById('returnDeviceName').textContent = deviceId;
+            document.getElementById('returnLocationDisplay').textContent = config.returnLocation;
+            document.getElementById('returnModal').classList.add('active');
+        }
+
+        // 關閉 Modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // 限制公務機號碼只能輸入數字
+        document.getElementById('borrowPhoneNumber').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);
+        });
+
+        // 借出表單送出
+        document.getElementById('borrowForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const deviceId = document.getElementById('borrowDeviceId').value;
+            const phoneNumber = document.getElementById('borrowPhoneNumber').value.trim();
+            const location = document.getElementById('borrowLocation').value;
+            const submitBtn = document.getElementById('borrowSubmitBtn');
+            const messageDiv = document.getElementById('globalMessage');
+
+            // 驗證公務機號碼
+            if (!/^[0-9]{4}$/.test(phoneNumber)) {
+                messageDiv.textContent = '請輸入正確的 4 位數公務機號碼';
+                messageDiv.className = 'message error';
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = '送出中...';
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: phoneNumber,
+                        location: location,
+                        deviceId: deviceId,
+                        borrowStatus: '借出'
+                    })
+                });
+
+                messageDiv.textContent = `${deviceId} 已借出至 ${location}`;
+                messageDiv.className = 'message success';
+
+                closeModal('borrowModal');
+
+                // 重新載入該設備狀態
+                setTimeout(() => {
+                    loadDeviceStatus(deviceId);
+                }, 1000);
+
+                // 3秒後隱藏訊息
+                setTimeout(() => {
+                    messageDiv.className = 'message';
+                }, 3000);
+
+            } catch (error) {
+                messageDiv.textContent = '操作失敗，請稍後再試。';
+                messageDiv.className = 'message error';
+                console.error('Error:', error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '確認借出';
+            }
+        });
+
+        // 歸還表單送出
+        document.getElementById('returnForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const deviceId = document.getElementById('returnDeviceId').value;
+            const location = document.getElementById('returnLocation').value;
+            const submitBtn = document.getElementById('returnSubmitBtn');
+            const messageDiv = document.getElementById('globalMessage');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = '送出中...';
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: '-',
+                        location: location,
+                        deviceId: deviceId,
+                        borrowStatus: '歸還'
+                    })
+                });
+
+                messageDiv.textContent = `${deviceId} 已歸還至 ${location}`;
+                messageDiv.className = 'message success';
+
+                closeModal('returnModal');
+
+                // 重新載入該設備狀態
+                setTimeout(() => {
+                    loadDeviceStatus(deviceId);
+                }, 1000);
+
+                // 3秒後隱藏訊息
+                setTimeout(() => {
+                    messageDiv.className = 'message';
+                }, 3000);
+
+            } catch (error) {
+                messageDiv.textContent = '操作失敗，請稍後再試。';
+                messageDiv.className = 'message error';
+                console.error('Error:', error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '確認歸還';
+            }
+        });
+
+        // 點擊 Modal 外部關閉
+        document.getElementById('borrowModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal('borrowModal');
+            }
+        });
+
+        document.getElementById('returnModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal('returnModal');
+            }
+        });
+    </script>
+</body>
+</html>
