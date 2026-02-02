@@ -859,7 +859,7 @@
 
         <!-- Footer -->
         <div class="copyright">
-            © 2026 Yang Hao Wei. All Rights Reserved.
+            &copy; 2025-<span id="year"></span> Yang Hao Wei. All Rights Reserved.
         </div>
         
     </div>
@@ -1207,6 +1207,8 @@
                 closeModal('returnModal');
             }
         });
+
+        document.getElementById('year').textContent = new Date().getFullYear();
     </script>
 </body>
 </html>
