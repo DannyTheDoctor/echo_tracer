@@ -1068,8 +1068,8 @@
         function openBorrowModal(deviceId) {
             document.getElementById('borrowDeviceId').value = deviceId;
             document.getElementById('borrowModalTitle').textContent = `借出設備 - ${deviceId}`;
-            document.getElementById('borrowPhoneNumber').value = '';
-            document.getElementById('borrowLocation').value = '';
+            document.getElementById('borrowPhoneNumber').value = localStorage.getItem('dm_phoneNumber') || '';
+            document.getElementById('borrowLocation').value = localStorage.getItem('dm_location') || '';
             document.getElementById('borrowModal').classList.add('active');
         }
 
@@ -1126,6 +1126,10 @@
 
                 messageDiv.textContent = `${deviceId} 已借出至 ${location}`;
                 messageDiv.className = 'message success';
+
+                // 儲存到 localStorage
+                localStorage.setItem('dm_phoneNumber', phoneNumber);
+                localStorage.setItem('dm_location', location);
 
                 closeModal('borrowModal');
 
