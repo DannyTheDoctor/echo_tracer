@@ -525,6 +525,16 @@
             document.getElementById('phoneNumber').addEventListener('input', function(e) {
                 this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);
             });
+
+            // 從 localStorage 帶入上次的值
+            const savedPhone = localStorage.getItem('dm_phoneNumber');
+            const savedLocation = localStorage.getItem('dm_location');
+            if (savedPhone) {
+                document.getElementById('phoneNumber').value = savedPhone;
+            }
+            if (savedLocation) {
+                document.getElementById('location').value = savedLocation;
+            }
         }
 
         // 顯示歸還表單
@@ -622,6 +632,12 @@
                     messageDiv.textContent = `${deviceId} 已歸還至 ${data.location}`;
                 }
                 messageDiv.className = 'message success';
+
+                // 儲存到 localStorage
+                if (actionType === '借出') {
+                    localStorage.setItem('dm_phoneNumber', phoneNumber);
+                    localStorage.setItem('dm_location', location);
+                }
 
                 // 重設表單
                 if (actionType === '借出') {
